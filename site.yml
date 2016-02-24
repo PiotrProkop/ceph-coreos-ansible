@@ -1,0 +1,9 @@
+- hosts: mons
+  roles:
+    - mons
+  serial: 1
+
+- hosts: osds
+  roles:
+    - osds
+  serial: 1

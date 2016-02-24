@@ -1,0 +1,17 @@
+[Unit]
+Description=Ceph Mon
+After=docker.service
+[Service]
+Environment=HOSTNAME=%H
+ExecStart=/usr/bin/docker run --rm --name ceph-mon --net=host \
+   -e KV_TYPE=etcd \
+   -e KV_IP=127.0.0.1 \
+   -e MON_IP={{hostvars[inventory_hostname]['ansible_' + mon_interface]['ipv4']['address']}} \
+   -e CEPH_PUBLIC_NETWORK={{hostvars[inventory_hostname]['ansible_' + mon_interface]['ipv4']['network']}} \
+   -e CEPH_CLUSTER_NETWORK={{ceph_network}} \
+   ceph/daemon mon
+ExecStop=-/usr/bin/docker stop ceph-mon
+Restart=always
+RestartSec=10s
+TimeoutStartSec=120
+TimeoutStopSec=15

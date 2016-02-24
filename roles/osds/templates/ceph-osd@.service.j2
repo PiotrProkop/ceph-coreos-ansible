@@ -1,0 +1,19 @@
+[Unit]
+Description=Ceph OSD
+After=docker.service
+
+[Service]
+Environment=HOSTNAME=%H
+ExecStart=/usr/bin/docker run --name ceph-osd-%i --net=host --pid=host --privileged=true \
+   -e OSD_DEVICE=/dev/%i \
+   -v /dev:/dev \
+   -e KV_TYPE=etcd \
+   -e KV_IP=127.0.0.1 \
+   -e OSD_TYPE=activate \
+   ceph/daemon osd
+ExecStop=-/usr/bin/docker stop ceph-osd-%i
+ExecStopPost=/usr/bin/docker rm -f ceph-osd-%i
+Restart=always
+RestartSec=10s
+TimeoutStartSec=120
+TimeoutStopSec=15

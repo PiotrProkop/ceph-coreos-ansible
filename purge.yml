@@ -1,0 +1,7 @@
+- hosts: osds
+  roles:
+    - purge_osds
+
+- hosts: mons
+  roles:
+    - purge-mons

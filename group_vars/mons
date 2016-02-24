@@ -1,0 +1,4 @@
+# mon onterface
+mon_interface: 
+# ceph public network
+ceph_public_network: 10.91.97.247/23

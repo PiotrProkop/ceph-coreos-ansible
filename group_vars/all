@@ -1,0 +1,22 @@
+ceph_osds:
+ - sdb
+ - sdc
+ - sdd
+ - sde
+ - sdf
+ - sdg
+ - sdh
+ - sdi
+ - sdj
+ - sdk
+ - sdl
+ - sdm
+ - sdn
+ - sdo
+ - sdp
+ - sdr
+ - sds
+
+
+#put ceph network
+ceph_network: 

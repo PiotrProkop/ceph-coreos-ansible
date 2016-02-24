@@ -1,0 +1,39 @@
+---
+- name: prepare ceph-osd service file
+  template:
+    src: ceph-osd@.service.j2
+    dest: /etc/systemd/system/ceph-osd@.service
+
+- name: reload systemd
+  command: systemctl daemon-reload
+
+- name: clean disks
+  script: clean_part.sh {{item}}
+  with_items:
+    - "{{ceph_osds}}"
+
+- name: prepare disks
+  command: docker run --name  ceph-prepare-{{item}} --net=host --privileged=true --pid=host
+           -v /dev/:/dev/  -e OSD_DEVICE=/dev/{{item}} -e KV_TYPE=etcd -e KV_IP=127.0.0.1
+           -e OSD_TYPE=prepare ceph/daemon osd
+  ignore_errors: true
+  register: output
+  with_items:
+    - "{{ceph_osds}}"
+
+- name: delete prepare disks
+  docker:
+    name: ceph-prepare-{{item}}
+    state: absent
+    image: ceph/daemon
+  with_items:
+    - "{{ceph_osds}}"
+
+- name: run osd services
+  service:
+    name: ceph-osd@{{item.item}}
+    state: started
+  with_items:
+    - "{{output.results}}"
+  when:
+    - item.rc == 0

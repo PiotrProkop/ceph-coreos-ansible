@@ -1,0 +1,34 @@
+- name: populate
+  docker:
+    name: populate
+    image: ceph/daemon
+    command: populate_kvstore
+    net: host
+    env:
+      KV_TYPE: etcd
+      KV_IP: 127.0.0.1
+      KV_PORT: 4001
+  run_once: true
+
+- name: delete populate docker
+  docker:
+    name: populate
+    state: absent
+    image: ceph/daemon
+
+- name: prepare service file
+  template:
+    src: ceph-mon.service.j2
+    dest: /etc/systemd/system/ceph-mon.service
+
+- name: reload systemd
+  command: systemctl daemon-reload
+
+- name: run mon services
+  service:
+    name: ceph-mon
+    state: started
+
+
+
+

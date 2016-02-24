@@ -1,0 +1,16 @@
+---
+- name: stop osds
+  service:
+    name: ceph-osd@{{item}}
+    state: stopped
+  with_items:
+    - "{{ceph_osds}}"
+  ignore_errors: yes
+
+- name: delete osd service file
+  file:
+    path: /etc/systemd/system/ceph-osd@.service
+    state: absent
+  notify:
+    - reload systemd
+    - reset failed

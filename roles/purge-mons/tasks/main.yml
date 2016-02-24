@@ -1,0 +1,19 @@
+---
+- name: stop mon
+  service:
+    name: ceph-mon
+    state: stopped
+  ignore_errors: yes
+
+- name: delete service file
+  file:
+    path: /etc/systemd/system/ceph-mon.service
+    state: absent
+  notify:
+    - reload systemd
+    - reset failed
+
+- name: clean etcd
+  command: etcdctl rm --recursive /ceph-config
+  run_once: true
+  ignore_errors: yes
